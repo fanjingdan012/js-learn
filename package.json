@@ -1,0 +1,24 @@
+{
+  "name": "js-ut-learn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "sinon": "^7.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fanjingdan012/js-ut-learn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fanjingdan012/js-ut-learn/issues"
+  },
+  "homepage": "https://github.com/fanjingdan012/js-ut-learn#readme"
+}
