@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="./js/react.development.js"></script>
+  <script src="./js/react-dom.development.js"></script>
+  <script src="./js/babel.min.js"></script>
+  <link rel="stylesheet" href="./js/bootstrap.min.css">
+</head>
+<style>
+  #example {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .asset {
+    background-color: lightblue;
+    text-align: center
+  }
+
+  .cost {
+    background-color: aquamarine;
+    text-align: center
+  }
+
+  .debt {
+    background-color: black;
+    color: white;
+    text-align: center
+  }
+
+  .equity {
+    background-color: orchid;
+    color: white;
+    text-align: center
+  }
+
+  .income {
+    background-color: gold;
+    text-align: center
+  }
+</style>
+<script type="text/babel">
+
+function Account(props) {
+  var drs=[];
+  var crs=[];
+  if(props.drs){
+    for (var i = 0; i < props.drs.length; i++) {
+      drs.push(<p >{props.drs[i]}</p>);  
+    }
+  }
+  if(props.crs){
+    for (var i = 0; i < props.crs.length; i++) {
+      crs.push(<p >{props.crs[i]}</p>);  
+    }
+  }
+    return  (
+      <div>
+    <table border="1">
+    <tbody>
+        <tr>
+          <th className={props.type} colSpan="2">{props.name}</th>
+        </tr>
+        <tr>
+          <td>Dr:{drs}</td>
+          <td>Cr:{crs}</td>
+        </tr>
+        </tbody>
+      </table><br/>
+    </div>);
+}
+ 
+
+function BalanceSheet(props) {
+
+  var accounts = props.accounts;
+  var jvs = props.jvs;
+  var type_accounts_map=handle_data(accounts,jvs);
+  var assets_data = type_accounts_map["asset"]||[];
+  var debts_data = type_accounts_map["debt"]||[];
+  var equities_data = type_accounts_map["equity"]||[];
+  var costs_data = type_accounts_map["cost"]||[];
+  var assets=[];
+  var debts=[];
+  var equities=[];
+  console.log(type_accounts_map);
+
+    
+  for(var i in assets_data){
+    assets.push(<Account key={assets_data[i].name} name={assets_data[i].name} type={assets_data[i].type} drs={assets_data[i]["Dr"]} crs={assets_data[i]["Cr"]}/>);  
+  }
+  for(var i in costs_data){
+    assets.push(<Account key={costs_data[i].name} name={costs_data[i].name} type={costs_data[i].type} drs={costs_data[i]["Dr"]} crs={costs_data[i]["Cr"]}/>);  
+  }
+  for (var i in debts_data) {
+    debts.push(<Account key={debts_data[i].name} name={debts_data[i].name} type={debts_data[i].type} drs={debts_data[i]["Dr"]} crs={debts_data[i]["Cr"]}/>);  
+  }
+  for (var i in equities_data) {
+    equities.push(<Account key={equities_data[i].name} name={equities_data[i].name} type={equities_data[i].type} drs={equities_data[i]["Dr"]} crs={equities_data[i]["Cr"]}/>);  
+  }
+  return  (
+    <div>
+    <table className="table" border="1">
+      <tbody>
+        <tr>
+          <th className="asset" colSpan="2">B/S</th>
+        </tr>
+        <tr>
+          <td>
+            {assets}
+          </td>
+          <td>
+            {debts}
+            {equities}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    </div>
+  );
+}
+
+function IncomeStatement(props) {
+  var accounts = props.accounts;
+  var jvs = props.jvs;
+  var type_accounts_map=handle_data(accounts,jvs);
+  var incomes_data = type_accounts_map["income"]||[];
+  var incomes=[];
+  console.log(type_accounts_map);
+  for(var i in incomes_data){
+    incomes.push(<Account key={incomes_data[i].name} name={incomes_data[i].name} type={incomes_data[i].type} drs={incomes_data[i]["Dr"]} crs={incomes_data[i]["Cr"]}/>);  
+  }
+  return  (
+    <table className="table" border="1">
+      <tbody>
+        <tr>
+          <th className="income">IS</th>
+        </tr>
+        <tr>
+          <td>
+            {incomes}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+var accounts=[
+{"name":"库存现金","type":"asset","num":1001},
+{"name":"银行存款","type":"asset","num":1002},
+{"name":"存放中央银行款项","type":"asset","num":1003},
+{"name":"存放同业","type":"asset","num":1011},
+{"name":"其它货币基金","type":"asset","num":1015},
+{"name":"结算备付金","type":"asset","num":1021},
+{"name":"存出保证金","type":"asset","num":1031},
+{"name":"拆出资金","type":"asset","num":1051},
+{"name":"交易性金融资产","type":"asset","num":1101},
+{"name":"买入返售金融资产","type":"asset","num":1111},
+{"name":"应收票据","type":"asset","num":1121},
+{"name":"应收帐款","type":"asset","num":1122},
+{"name":"预付帐款","type":"asset","num":1123},
+{"name":"应收股利","type":"asset","num":1131},
+{"name":"应收利息","type":"asset","num":1132},
+{"name":"应收保护储金","type":"asset","num":1211},
+{"name":"应收代位追偿款","type":"asset","num":1221},
+{"name":"应收分保帐款","type":"asset","num":1222},
+{"name":"应收分保未到期责任准备金","type":"asset","num":1223},
+{"name":"应收分保保险责任准备金","type":"asset","num":1224},
+{"name":"其它应收款","type":"asset","num":1231},
+{"name":"坏帐准备","type":"asset","num":1241},
+{"name":"贴现资产","type":"asset","num":1251},
+{"name":"贷款","type":"asset","num":1301},
+{"name":"贷款损失准备","type":"asset","num":1302},
+{"name":"代理兑付证券","type":"asset","num":1311},
+{"name":"代理业务资产","type":"asset","num":1321},
+{"name":"材料采购","type":"asset","num":1401},
+{"name":"在途物资","type":"asset","num":1402},
+{"name":"原材料","type":"asset","num":1403},
+{"name":"材料成本差异","type":"asset","num":1404},
+{"name":"库存商品","type":"asset","num":1406},
+{"name":"发出商品","type":"asset","num":1407},
+{"name":"商品进销差价","type":"asset","num":1410},
+{"name":"委托加工物资","type":"asset","num":1411},
+{"name":"包装物及低值易耗品","type":"asset","num":1412},
+{"name":"消耗性物物资产","type":"asset","num":1421},
+{"name":"周转材料","type":"asset","num":1431},
+{"name":"贵金属","type":"asset","num":1441},
+{"name":"抵债资产","type":"asset","num":1442},
+{"name":"损余物资","type":"asset","num":1451},
+{"name":"存货跌价准备","type":"asset","num":1461},
+{"name":"待摊费用","type":"asset","num":1501},
+{"name":"独立帐户资产","type":"asset","num":1511},
+{"name":"持有至到期投资","type":"asset","num":1521},
+{"name":"持有至到期投资减值准备","type":"asset","num":1522},
+{"name":"可供出售金融资产","type":"asset","num":1523},
+{"name":"长期股权投资","type":"asset","num":1524},
+{"name":"长期股权投资减值准备","type":"asset","num":1525},
+{"name":"投资性房地产","type":"asset","num":1526},
+{"name":"长期应收款","type":"asset","num":1531},
+{"name":"未实现融资收益","type":"asset","num":1541},
+{"name":"存出资本保证金","type":"asset","num":1551},
+{"name":"固定资产","type":"asset","num":1601},
+{"name":"累计折旧","type":"asset","num":1602},
+{"name":"固定资产减值准备","type":"asset","num":1603},
+{"name":"在建工程","type":"asset","num":1604},
+{"name":"工程物资","type":"asset","num":1605},
+{"name":"固定资产清理","type":"asset","num":1606},
+{"name":"融资租赁资产","type":"asset","num":1611},
+{"name":"未担保余值","type":"asset","num":1612},
+{"name":"生产性生物资产","type":"asset","num":1621},
+{"name":"生产性生物资产累计折旧","type":"asset","num":1622},
+{"name":"公益性生物资产","type":"asset","num":1623},
+{"name":"油气资产","type":"asset","num":1631},
+{"name":"累计折耗","type":"asset","num":1632},
+{"name":"无形资产","type":"asset","num":1701},
+{"name":"累计摊销","type":"asset","num":1702},
+{"name":"无形资产减值准备","type":"asset","num":1703},
+{"name":"商誉","type":"asset","num":1711},
+{"name":"长期待摊费用","type":"asset","num":1801},
+{"name":"递延所得资产","type":"asset","num":1811},
+{"name":"待处理财产损益","type":"asset","num":1901},
+{"name":"短期借款","type":"debt","num":2001},
+{"name":"存入保证金","type":"debt","num":2002},
+{"name":"拆入资金","type":"debt","num":2003},
+{"name":"向中央银行借款","type":"debt","num":2004},
+{"name":"同业存放","type":"debt","num":2011},
+{"name":"吸收存款","type":"debt","num":2012},
+{"name":"贴现负债","type":"debt","num":2021},
+{"name":"交易性金融负债","type":"debt","num":2101},
+{"name":"专出回购金融资产款","type":"debt","num":2111},
+{"name":"应付票据","type":"debt","num":2201},
+{"name":"应付帐款","type":"debt","num":2202},
+{"name":"预收帐款","type":"debt","num":2205},
+{"name":"应付职工薪酬","type":"debt","num":2211},
+{"name":"应交税费","type":"debt","num":2221},
+{"name":"应付股利","type":"debt","num":2231},
+{"name":"应付利息","type":"debt","num":2232},
+{"name":"其他应付款","type":"debt","num":2241},
+{"name":"应付保户红利","type":"debt","num":2251},
+{"name":"应付分保帐款","type":"debt","num":2261},
+{"name":"代理买卖证券款","type":"debt","num":2311},
+{"name":"代理承销证券款","type":"debt","num":2312},
+{"name":"代理兑付证券款","type":"debt","num":2313},
+{"name":"代理业务负债","type":"debt","num":2314},
+{"name":"预提费用","type":"debt","num":2401},
+{"name":"预计负债","type":"debt","num":2411},
+{"name":"递延收益","type":"debt","num":2501},
+{"name":"长期借款","type":"debt","num":2601},
+{"name":"长期债券","type":"debt","num":2602},
+{"name":"未到期责任准备金","type":"debt","num":2701},
+{"name":"保险责任准备金","type":"debt","num":2702},
+{"name":"保户储金","type":"debt","num":2711},
+{"name":"独立帐户负债","type":"debt","num":2721},
+{"name":"长期应付款","type":"debt","num":2801},
+{"name":"未确认融资费用","type":"debt","num":2802},
+{"name":"专项应付款","type":"debt","num":2811},
+{"name":"递延所得税负债","type":"debt","num":2901},
+{"name":"清算资金往来","type":"common","num":3001},
+{"name":"外汇买卖","type":"common","num":3002},
+{"name":"衍生工具","type":"common","num":3101},
+{"name":"套期工具","type":"common","num":3201},
+{"name":"被套期项目","type":"common","num":3202},
+{"name":"生产成本","type":"cost","num":5001},
+{"name":"制造费用","type":"cost","num":5101},
+{"name":"劳务成本","type":"cost","num":5201},
+{"name":"研发支出","type":"cost","num":5301},
+{"name":"工程施工","type":"cost","num":5401},
+{"name":"工程结算","type":"cost","num":5402},
+{"name":"机械作业","type":"cost","num":5403},
+{"name":"主营业务收入","type":"income","num":6001},
+{"name":"利息收入","type":"income","num":6011},
+{"name":"手续费收入","type":"income","num":6021},
+{"name":"保费收入","type":"income","num":6031},
+{"name":"分保费收入","type":"income","num":6032},
+{"name":"租赁收入","type":"income","num":6041},
+{"name":"其他业务收入","type":"income","num":6051},
+{"name":"汇兑损益","type":"income","num":6061},
+{"name":"公允价值变动损益","type":"income","num":6101},
+{"name":"投资收益","type":"income","num":6111},
+{"name":"摊回保险责任准备金","type":"income","num":6201},
+{"name":"摊回赔付支出","type":"income","num":6202},
+{"name":"摊回分保费用","type":"income","num":6203},
+{"name":"营业外收入","type":"income","num":6301},
+{"name":"主营业务成本","type":"income","num":6401},
+{"name":"其它业务成本","type":"income","num":6402},
+{"name":"营业税金及附加","type":"income","num":6405},
+{"name":"利息支出","type":"income","num":6411},
+{"name":"手续费支出","type":"income","num":6421},
+{"name":"提取未到期责任准备金","type":"income","num":6501},
+{"name":"撮保险责任准备金","type":"income","num":6502},
+{"name":"赔付支出","type":"income","num":6511},
+{"name":"保户红利支出","type":"income","num":6521},
+{"name":"退保金","type":"income","num":6531},
+{"name":"分出保费","type":"income","num":6541},
+{"name":"分保费用","type":"income","num":6542},
+{"name":"销售费用","type":"income","num":6601},
+{"name":"管理费用","type":"income","num":6602},
+{"name":"财务费用","type":"income","num":6603},
+{"name":"勘探费用","type":"income","num":6604},
+{"name":"资产减值损失","type":"income","num":6701},
+{"name":"营业外支出","type":"income","num":6711},
+{"name":"所得税","type":"income","num":6801},
+{"name":"以前年度损益调整","type":"income","num":6901},
+  ];
+
+
+
+  
+var jvs=[
+    {"name":"外购存货","entries":[
+      {"direction":"Dr","account":"库存商品","amount":100},
+      {"direction":"Dr","account":"应交税费","amount":17},
+      {"direction":"Cr","account":"银行存款","amount":117},
+      ]
+    },
+    {"name":"加工取得存货","entries":[
+      {"direction":"Dr","account":"制造费用","amount":20},
+      {"direction":"Cr","account":"银行存款","amount":20},
+      {"direction":"Dr","account":"库存商品","amount":100},
+      {"direction":"Cr","account":"应付职工薪酬","amount":20},
+      {"direction":"Cr","account":"原材料","amount":60},
+      {"direction":"Cr","account":"制造费用","amount":20},
+      ]
+    },
+    {"name":"盘盈存货","entries":[
+      {"direction":"Dr","account":"库存商品","amount":"重置成本"},
+      {"direction":"Cr","account":"待处理财产损益","amount":20},
+      {"direction":"Dr","account":"待处理财产损益","amount":100},
+      {"direction":"Cr","account":"管理费用","amount":20},
+      ]
+    },
+    {"name":"盘亏存货","entries":[
+      {"direction":"Dr","account":"待处理财产损益","amount":""},
+      {"direction":"Cr","account":"应交税费","amount":20},
+      {"direction":"Cr","account":"库存商品","amount":100},
+      ]
+    },
+    {"name":"管理不善盘亏存货","entries":[
+      {"direction":"Dr","account":"管理费用","amount":""},
+      {"direction":"Cr","account":"待处理财产损益","amount":20},
+      ]
+    },
+    {"name":"天灾盘亏存货","entries":[
+      {"direction":"Dr","account":"营业外支出","amount":""},
+      {"direction":"Cr","account":"待处理财产损益","amount":20},
+      ]
+    },
+    {"name":"计提跌价准备","entries":[
+      {"direction":"Dr","account":"资产减值损失","amount":20},
+      {"direction":"Cr","account":"存货跌价准备","amount":20},
+     
+      ]
+    },
+    {"name":"转回跌价准备","entries":[
+      {"direction":"Dr","account":"存货跌价准备","amount":20},
+      {"direction":"Cr","account":"资产减值损失","amount":20},
+     
+      ]
+    },
+    {"name":"卖存货","entries":[
+      {"direction":"Dr","account":"主营业务成本","amount":20},
+      {"direction":"Dr","account":"存货跌价准备","amount":20},
+      {"direction":"Cr","account":"库存商品","amount":100},
+      ]
+    },
+    {"name":"卖原材料","entries":[
+      {"direction":"Dr","account":"其它业务成本","amount":20},
+      {"direction":"Dr","account":"存货跌价准备","amount":20},
+      {"direction":"Cr","account":"原材料","amount":100},
+      ]
+    },
+    {"name":"生产领用包装物","entries":[
+      {"direction":"Dr","account":"制造费用","amount":20},
+      {"direction":"Cr","account":"周转材料","amount":100},
+      ]
+    },
+    {"name":"随产品卖出不单独计价包装物","entries":[
+      {"direction":"Dr","account":"销售费用","amount":20},
+      {"direction":"Cr","account":"周转材料","amount":20},
+      ]
+    },
+    {"name":"随产品卖出单独计价包装物","entries":[
+      {"direction":"Dr","account":"其它业务成本","amount":20},
+      {"direction":"Cr","account":"周转材料","amount":20},
+      ]
+    },
+    
+    
+  ];
+
+
+function handle_data(accounts,jvs){
+  var type_accounts_map=[];
+  for (var i = 0; i < jvs.length; i++) {
+    var jv_name = jvs[i].name;
+    var jv_entries = jvs[i].entries;
+    for (var j = 0; j < jv_entries.length; j++) {
+      var account_name = jv_entries[j].account;
+      var account = lookup_account(account_name,accounts);
+      if(!type_accounts_map[account.type]){
+        type_accounts_map[account.type] = [];//e.g. type_accounts_map["asset"]["inventory"]={...}
+      }
+      var existing_account= type_accounts_map[account.type][account_name];
+      if(!existing_account){
+        existing_account = account;//e.g. type_accounts_map["asset"]["inventory"]={...}
+      }
+      if(!existing_account[jv_entries[j].direction]){
+        existing_account[jv_entries[j].direction]=[];
+      }
+      existing_account[jv_entries[j].direction].push(jv_name); 
+      type_accounts_map[account.type][account_name] = existing_account;
+    }
+    console.log("map"+type_accounts_map);
+    console.log(type_accounts_map);
+  }
+
+  return type_accounts_map;
+}
+function lookup_account(account_name,accounts) {
+  for(var i = 0;i<accounts.length;i++){
+    if(accounts[i].name===account_name){
+      return accounts[i];
+    }
+  }
+  return null;
+  console.log("cannot find account:"+account_name)
+}
+
+
+
+
+
+
+
+
+const element = (
+  <div>
+    <Account key="ddd" name="ddd3" type="debt" drs={["aaa","bbb"]}/>
+    <BalanceSheet accounts={accounts} jvs={jvs} />
+    <IncomeStatement accounts={accounts} jvs={jvs}/>
+  </div>
+);
+ 
+
+ 
+ReactDOM.render(
+    element,
+    document.getElementById('example')
+);
+ 
+ 
+</script>
+<h1>Inventory</h1>
+<p>powered by react js</p>
+<div id="example"></div>
+
+</html>
