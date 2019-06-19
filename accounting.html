@@ -76,7 +76,7 @@ function BalanceSheet(props) {
 
   var accounts = props.accounts;
   var jvs = props.jvs;
-  var type_accounts_map=handle_data(accounts,jvs);
+  var type_accounts_map=props.type_accounts_map;
   var assets_data = type_accounts_map["asset"]||[];
   var debts_data = type_accounts_map["debt"]||[];
   var equities_data = type_accounts_map["equity"]||[];
@@ -84,7 +84,6 @@ function BalanceSheet(props) {
   var assets=[];
   var debts=[];
   var equities=[];
-  console.log(type_accounts_map);
 
     
   for(var i in assets_data){
@@ -125,10 +124,9 @@ function BalanceSheet(props) {
 function IncomeStatement(props) {
   var accounts = props.accounts;
   var jvs = props.jvs;
-  var type_accounts_map=handle_data(accounts,jvs);
+  var type_accounts_map=props.type_accounts_map;
   var incomes_data = type_accounts_map["income"]||[];
   var incomes=[];
-  console.log(type_accounts_map);
   for(var i in incomes_data){
     incomes.push(<Account key={incomes_data[i].name} name={incomes_data[i].name} type={incomes_data[i].type} drs={incomes_data[i]["Dr"]} crs={incomes_data[i]["Cr"]}/>);  
   }
@@ -152,11 +150,12 @@ var accounts=[
 {"name":"银行存款","type":"asset","num":1002},
 {"name":"存放中央银行款项","type":"asset","num":1003},
 {"name":"存放同业","type":"asset","num":1011},
-{"name":"其它货币基金","type":"asset","num":1015},
+{"name":"其他货币基金","type":"asset","num":1015},
 {"name":"结算备付金","type":"asset","num":1021},
 {"name":"存出保证金","type":"asset","num":1031},
 {"name":"拆出资金","type":"asset","num":1051},
 {"name":"交易性金融资产","type":"asset","num":1101},
+{"name":"交易性金融资产-成本","type":"asset","num":11011},
 {"name":"买入返售金融资产","type":"asset","num":1111},
 {"name":"应收票据","type":"asset","num":1121},
 {"name":"应收帐款","type":"asset","num":1122},
@@ -168,10 +167,11 @@ var accounts=[
 {"name":"应收分保帐款","type":"asset","num":1222},
 {"name":"应收分保未到期责任准备金","type":"asset","num":1223},
 {"name":"应收分保保险责任准备金","type":"asset","num":1224},
-{"name":"其它应收款","type":"asset","num":1231},
+{"name":"其他应收款","type":"asset","num":1231},
 {"name":"坏帐准备","type":"asset","num":1241},
 {"name":"贴现资产","type":"asset","num":1251},
 {"name":"贷款","type":"asset","num":1301},
+{"name":"贷款-本金","type":"asset","num":13011},
 {"name":"贷款损失准备","type":"asset","num":1302},
 {"name":"代理兑付证券","type":"asset","num":1311},
 {"name":"代理业务资产","type":"asset","num":1321},
@@ -205,6 +205,7 @@ var accounts=[
 {"name":"累计折旧","type":"asset","num":1602},
 {"name":"固定资产减值准备","type":"asset","num":1603},
 {"name":"在建工程","type":"asset","num":1604},
+{"name":"在建工程-待摊支出","type":"asset","num":16041},
 {"name":"工程物资","type":"asset","num":1605},
 {"name":"固定资产清理","type":"asset","num":1606},
 {"name":"融资租赁资产","type":"asset","num":1611},
@@ -222,6 +223,7 @@ var accounts=[
 {"name":"递延所得资产","type":"asset","num":1811},
 {"name":"待处理财产损益","type":"asset","num":1901},
 {"name":"短期借款","type":"debt","num":2001},
+{"name":"一年内到期的非流动负债","type":"debt","num":2010},
 {"name":"存入保证金","type":"debt","num":2002},
 {"name":"拆入资金","type":"debt","num":2003},
 {"name":"向中央银行借款","type":"debt","num":2004},
@@ -235,6 +237,9 @@ var accounts=[
 {"name":"预收帐款","type":"debt","num":2205},
 {"name":"应付职工薪酬","type":"debt","num":2211},
 {"name":"应交税费","type":"debt","num":2221},
+{"name":"应交税费-应交增值税（销项）","type":"debt","num":22211},
+{"name":"应交税费-应交增值税（进项）","type":"debt","num":22212},
+{"name":"应交税费-应交增值税（进项转出）","type":"debt","num":22213},
 {"name":"应付股利","type":"debt","num":2231},
 {"name":"应付利息","type":"debt","num":2232},
 {"name":"其他应付款","type":"debt","num":2241},
@@ -257,11 +262,22 @@ var accounts=[
 {"name":"未确认融资费用","type":"debt","num":2802},
 {"name":"专项应付款","type":"debt","num":2811},
 {"name":"递延所得税负债","type":"debt","num":2901},
+
 {"name":"清算资金往来","type":"common","num":3001},
 {"name":"外汇买卖","type":"common","num":3002},
 {"name":"衍生工具","type":"common","num":3101},
 {"name":"套期工具","type":"common","num":3201},
 {"name":"被套期项目","type":"common","num":3202},
+{"name":"实收资本","type":"equity","num":4001},
+{"name":"资本公积","type":"equity","num":4002},
+{"name":"资本公积-资本溢价","type":"equity","num":40021},
+{"name":"盈余公积","type":"equity","num":4101},
+{"name":"一般风险准备","type":"equity","num":4102},
+{"name":"本年利润","type":"equity","num":4103},
+{"name":"利润分配","type":"equity","num":4104},
+{"name":"未分配利润","type":"equity","num":4105},
+{"name":"库存股","type":"equity","num":4201},
+{"name":"专项储备","type":"equity","num":4301},
 {"name":"生产成本","type":"cost","num":5001},
 {"name":"制造费用","type":"cost","num":5101},
 {"name":"劳务成本","type":"cost","num":5201},
@@ -283,8 +299,9 @@ var accounts=[
 {"name":"摊回赔付支出","type":"income","num":6202},
 {"name":"摊回分保费用","type":"income","num":6203},
 {"name":"营业外收入","type":"income","num":6301},
+{"name":"资产处置损益","type":"income","num":6302},
 {"name":"主营业务成本","type":"income","num":6401},
-{"name":"其它业务成本","type":"income","num":6402},
+{"name":"其他业务成本","type":"income","num":6402},
 {"name":"营业税金及附加","type":"income","num":6405},
 {"name":"利息支出","type":"income","num":6411},
 {"name":"手续费支出","type":"income","num":6421},
@@ -310,9 +327,9 @@ var accounts=[
   
 var jvs=[
     {"name":"外购存货","entries":[
-      {"direction":"Dr","account":"库存商品","amount":100},
-      {"direction":"Dr","account":"应交税费","amount":17},
-      {"direction":"Cr","account":"银行存款","amount":117},
+      {"direction":"Dr","account":"库存商品","amount":"货款"},
+      {"direction":"Dr","account":"应交税费-应交增值税（进项）","amount":"进项税额"},
+      {"direction":"Cr","account":"银行存款","amount":"货款+进项税"},
       ]
     },
     {"name":"加工取得存货","entries":[
@@ -333,7 +350,7 @@ var jvs=[
     },
     {"name":"盘亏存货","entries":[
       {"direction":"Dr","account":"待处理财产损益","amount":""},
-      {"direction":"Cr","account":"应交税费","amount":20},
+      {"direction":"Cr","account":"应交税费-应交增值税（进项转出）","amount":"进项转出"},
       {"direction":"Cr","account":"库存商品","amount":100},
       ]
     },
@@ -366,7 +383,7 @@ var jvs=[
       ]
     },
     {"name":"卖原材料","entries":[
-      {"direction":"Dr","account":"其它业务成本","amount":20},
+      {"direction":"Dr","account":"其他业务成本","amount":20},
       {"direction":"Dr","account":"存货跌价准备","amount":20},
       {"direction":"Cr","account":"原材料","amount":100},
       ]
@@ -382,12 +399,240 @@ var jvs=[
       ]
     },
     {"name":"随产品卖出单独计价包装物","entries":[
-      {"direction":"Dr","account":"其它业务成本","amount":20},
+      {"direction":"Dr","account":"其他业务成本","amount":20},
       {"direction":"Cr","account":"周转材料","amount":20},
       ]
     },
-    
-    
+    {"name":"购买固定资产","entries":[
+      {"direction":"Dr","account":"在建工程","amount":40},
+      {"direction":"Dr","account":"应交税费-应交增值税（进项）","amount":20},
+      {"direction":"Cr","account":"银行存款","amount":20},
+      ]
+    },
+    {"name":"安装固定资产","entries":[
+      {"direction":"Dr","account":"在建工程","amount":40},
+      {"direction":"Cr","account":"应付职工薪酬","amount":20},
+      {"direction":"Cr","account":"原材料","amount":20},
+      ]
+    },
+    {"name":"固定资产达到预计可使用状态","entries":[
+      {"direction":"Dr","account":"固定资产","amount":20},
+      {"direction":"Cr","account":"在建工程","amount":20},
+      ]
+    },
+    {"name":"分期付款购买固定资产","entries":[
+      {"direction":"Dr","account":"在建工程","amount":"PV"},
+      {"direction":"Dr","account":"未确认融资费用","amount":"未来利息=未来本息-PV"},
+      {"direction":"Cr","account":"长期应付款","amount":"未来本息"},
+      ]
+    },
+    {"name":"分期付款购买固定资产-结算利息","entries":[
+      {"direction":"Dr","account":"财务费用","amount":"期初本金*实际利率"},
+      {"direction":"Cr","account":"未确认融资费用","amount":"期初本金*实际利率"},
+     
+      ]
+    },
+    {"name":"分期付款购买固定资产-分期付款","entries":[
+      {"direction":"Dr","account":"长期应付款","amount":"实际付掉的"},
+      {"direction":"Cr","account":"银行存款","amount":"实际付掉的"},
+      ]
+    },
+    {"name":"分期付款购买固定资产-年底列报","entries":[
+      {"direction":"Dr","account":"一年内到期的非流动负债","amount":"明年付的钱"},
+      {"direction":"Cr","account":"长期应付款","amount":"明年付的钱"},
+      ]
+    },
+    {"name":"自营建造固定资产-购入工程物资","entries":[
+      {"direction":"Dr","account":"工程物资","amount":"工程物资货价"},
+      {"direction":"Cr","account":"银行存款","amount":"工程物资货价"},
+      ]
+    },
+    {"name":"自营建造固定资产-领用工程物资or原材料or库存商品","entries":[
+      {"direction":"Dr","account":"在建工程","amount":"领用的价值"},
+      {"direction":"Cr","account":"工程物资","amount":"领用的价值"},
+      {"direction":"Cr","account":"原材料","amount":"领用的价值"},
+      {"direction":"Cr","account":"库存商品","amount":"领用的价值"},
+      ]
+    },
+    {"name":"自营建造固定资产-直接人工","entries":[
+      {"direction":"Dr","account":"在建工程","amount":"直接人工"},
+      {"direction":"Cr","account":"应付职工薪酬","amount":"直接人工"},
+      ]
+    },
+    {"name":"提取安全生产费","entries":[
+      {"direction":"Dr","account":"生产成本","amount":""},
+      {"direction":"Cr","account":"专项储备","amount":""},
+      ]
+    },
+    {"name":"使用安全生产费-费用性","entries":[
+      {"direction":"Dr","account":"专项储备","amount":""},
+      {"direction":"Cr","account":"银行存款","amount":""},
+      ]
+    },
+    {"name":"使用安全生产费-资产性-在建","entries":[
+      {"direction":"Dr","account":"在建工程","amount":""},
+      {"direction":"Dr","account":"应交税费-应交增值税（进项）","amount":""},
+      {"direction":"Cr","account":"银行存款","amount":""},
+      {"direction":"Cr","account":"应付职工薪酬","amount":""},
+      ]
+    },
+    {"name":"使用安全生产费-资产性-建完","entries":[
+      {"direction":"Dr","account":"固定资产","amount":20},
+      {"direction":"Cr","account":"在建工程","amount":20},
+      ]
+    },
+    {"name":"使用安全生产费-资产性-建完一次性提折旧","entries":[
+      {"direction":"Dr","account":"专项储备","amount":""},
+      {"direction":"Cr","account":"累计折旧","amount":""},
+     
+      ]
+    },
+    {"name":"出包建造固定资产-预付","entries":[
+      {"direction":"Dr","account":"预付帐款","amount":""},
+      {"direction":"Cr","account":"银行存款","amount":""},
+     
+      ]
+    },
+    {"name":"出包建造固定资产","entries":[
+      {"direction":"Dr","account":"在建工程","amount":""},
+      {"direction":"Cr","account":"预付帐款","amount":""},
+      {"direction":"Cr","account":"在建工程-待摊支出","amount":"分配额"},
+      {"direction":"Cr","account":"工程物资","amount":""},
+     
+      ]
+    },
+    {"name":"投资者投入固定资产","entries":[
+      {"direction":"Dr","account":"固定资产","amount":"FMV"},
+      {"direction":"Cr","account":"实收资本","amount":"注册资本享有的份额"},
+      {"direction":"Cr","account":"资本公积-资本溢价","amount":"FMV-实收资本"},
+  
+     
+      ]
+    },
+    {"name":"盘盈固定资产-作前期差错","entries":[
+      {"direction":"Dr","account":"固定资产","amount":"100%"},
+      {"direction":"Cr","account":"以前年度损益调整","amount":"100%"},
+  
+      ]
+    },
+    {"name":"盘盈固定资产-前期差错调整equity","entries":[
+      {"direction":"Dr","account":"以前年度损益调整","amount":"100%"},
+      {"direction":"Cr","account":"盈余公积","amount":"10%"},
+      {"direction":"Cr","account":"未分配利润","amount":"90%"},
+  
+      ]
+    },
+    {"name":"建核电站","entries":[
+      {"direction":"Dr","account":"固定资产","amount":"建造成本+弃置费用PV"},
+      {"direction":"Cr","account":"在建工程","amount":""},
+      {"direction":"Cr","account":"预计负债","amount":"弃置费用PV"},
+  
+      ]
+    },
+    {"name":"核电站弃置费用利息入财务费用","entries":[
+      {"direction":"Dr","account":"财务费用","amount":"实际利率法计算"},
+      {"direction":"Cr","account":"预计负债","amount":""},
+  
+      ]
+    },
+    {"name":"核电站弃置","entries":[
+      {"direction":"Dr","account":"预计负债","amount":""},
+      {"direction":"Cr","account":"银行存款","amount":""},
+  
+      ]
+    },
+    {"name":"FA提折旧","entries":[
+
+      {"direction":"Dr","account":"制造费用","amount":"生产车间折旧，也可以直接计入存货"},
+      {"direction":"Dr","account":"管理费用","amount":"管理部门，未使用的固定资产提折旧"},
+      {"direction":"Dr","account":"销售费用","amount":"销售部门折旧"},
+      {"direction":"Dr","account":"其他业务成本","amount":"出租FA折旧"},
+      {"direction":"Dr","account":"研发支出","amount":"研发无形资产使用FA折旧"},
+      {"direction":"Dr","account":"在建工程","amount":"在建工程使用FA折旧"},
+      {"direction":"Cr","account":"累计折旧","amount":"用规定折旧方法算的"},
+  
+      ]
+    },
+    {"name":"FA资本化后续支出（更新改造）-先转在建工程","entries":[
+
+      {"direction":"Dr","account":"在建工程","amount":""},
+      {"direction":"Dr","account":"累计折旧","amount":""},
+      {"direction":"Dr","account":"固定资产减值准备","amount":""},
+      {"direction":"Cr","account":"固定资产","amount":""},
+     
+  
+      ]
+    },
+    {"name":"FA费用化后续支出（修理）","entries":[
+
+      {"direction":"Dr","account":"销售费用","amount":"销售部门固定资产改造"},
+      {"direction":"Dr","account":"管理费用","amount":"管理部门和车间"},
+      {"direction":"Cr","account":"固定资产","amount":"更新改造花费"},
+     
+  
+      ]
+    },
+    {"name":"FA改造报废老部件","entries":[
+
+      {"direction":"Dr","account":"营业外支出","amount":"被改造掉的价值（BV，要减去折旧）"},
+      {"direction":"Cr","account":"在建工程","amount":"被改造掉的价值（BV，要减去折旧）"}, 
+      ]
+    },
+    {"name":"FA清理-转入固定资产清理","entries":[
+
+      {"direction":"Dr","account":"固定资产清理","amount":"BV"},
+      {"direction":"Dr","account":"累计折旧","amount":""},
+      {"direction":"Dr","account":"固定资产减值准备","amount":""},
+      {"direction":"Cr","account":"固定资产","amount":""},
+      ]
+    },
+    {"name":"FA清理-清理费","entries":[
+
+      {"direction":"Dr","account":"固定资产清理","amount":"清理费"},
+      {"direction":"Cr","account":"银行存款","amount":"清理费"},
+      ]
+    },
+    {"name":"FA清理-对外销售或取得补偿等","entries":[
+      {"direction":"Dr","account":"银行存款","amount":""},
+      {"direction":"Dr","account":"原材料","amount":"残料入库"},
+      {"direction":"Dr","account":"其他应收款","amount":"保险理赔等"},
+      {"direction":"Cr","account":"固定资产清理","amount":""},
+      {"direction":"Cr","account":"应交税费-应交增值税（销项）","amount":""},
+      ]
+    },
+    {"name":"FA清理-结转净损益，或反过来","entries":[
+      {"direction":"Dr","account":"资产处置损益","amount":""},
+      {"direction":"Cr","account":"固定资产清理","amount":""},
+      ]
+    },
+    {"name":"FA盘亏","entries":[
+      {"direction":"Dr","account":"待处理财产损益","amount":""},
+      {"direction":"Dr","account":"累计折旧","amount":""},
+      {"direction":"Cr","account":"固定资产","amount":""},
+      ]
+    },
+    {"name":"FA盘亏-残料and赔偿","entries":[
+      {"direction":"Dr","account":"原材料","amount":"残料入库"},
+      {"direction":"Dr","account":"其他应收款","amount":"过失人赔偿"},
+      {"direction":"Cr","account":"待处理财产损益","amount":""},
+      ]
+    },
+    {"name":"FA盘亏-结转损失","entries":[
+      {"direction":"Dr","account":"营业外支出","amount":"待处理财产损益余额"},
+      {"direction":"Cr","account":"待处理财产损益","amount":""},
+      ]
+    },
+    {"name":"买交易性金融资产","entries":[
+
+      {"direction":"Dr","account":"交易性金融资产-成本","amount":"FMV"},
+      {"direction":"Dr","account":"投资收益","amount":"交易费用"},
+      {"direction":"Dr","account":"应收股利","amount":"已宣告但尚未发放的现金股利，宣告后登记前"},
+      {"direction":"Dr","account":"应收利息","amount":"已到付息期尚未领取的利息"},
+      {"direction":"Cr","account":"银行存款","amount":""},
+  
+      ]
+    },
+   
   ];
 
 
@@ -396,6 +641,7 @@ function handle_data(accounts,jvs){
   for (var i = 0; i < jvs.length; i++) {
     var jv_name = jvs[i].name;
     var jv_entries = jvs[i].entries;
+
     for (var j = 0; j < jv_entries.length; j++) {
       var account_name = jv_entries[j].account;
       var account = lookup_account(account_name,accounts);
@@ -409,11 +655,9 @@ function handle_data(accounts,jvs){
       if(!existing_account[jv_entries[j].direction]){
         existing_account[jv_entries[j].direction]=[];
       }
-      existing_account[jv_entries[j].direction].push(jv_name); 
+      existing_account[jv_entries[j].direction].push(jv_name+"  ("+jv_entries[j].amount+")"); 
       type_accounts_map[account.type][account_name] = existing_account;
     }
-    console.log("map"+type_accounts_map);
-    console.log(type_accounts_map);
   }
 
   return type_accounts_map;
@@ -427,6 +671,8 @@ function lookup_account(account_name,accounts) {
   return null;
   console.log("cannot find account:"+account_name)
 }
+var type_accounts_map=handle_data(accounts,jvs);
+
 
 
 
@@ -438,8 +684,8 @@ function lookup_account(account_name,accounts) {
 const element = (
   <div>
     <Account key="ddd" name="ddd3" type="debt" drs={["aaa","bbb"]}/>
-    <BalanceSheet accounts={accounts} jvs={jvs} />
-    <IncomeStatement accounts={accounts} jvs={jvs}/>
+    <BalanceSheet accounts={accounts} jvs={jvs} type_accounts_map={type_accounts_map}/>
+    <IncomeStatement accounts={accounts} jvs={jvs}  type_accounts_map={type_accounts_map}/>
   </div>
 );
  
