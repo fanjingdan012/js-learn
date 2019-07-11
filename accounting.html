@@ -282,6 +282,8 @@ var accounts=[
 {"name":"制造费用","type":"cost","num":5101},
 {"name":"劳务成本","type":"cost","num":5201},
 {"name":"研发支出","type":"cost","num":5301},
+{"name":"研发支出-费用化支出","type":"cost","num":53011},
+{"name":"研发支出-资本化支出","type":"cost","num":53012},
 {"name":"工程施工","type":"cost","num":5401},
 {"name":"工程结算","type":"cost","num":5402},
 {"name":"机械作业","type":"cost","num":5403},
@@ -630,6 +632,47 @@ var jvs=[
       {"direction":"Dr","account":"应收利息","amount":"已到付息期尚未领取的利息"},
       {"direction":"Cr","account":"银行存款","amount":""},
   
+      ]
+    },
+    {"name":"分期购买无形资产-分期","entries":[
+      {"direction":"Dr","account":"长期应付款","amount":"合同金"},
+      {"direction":"Dr","account":"财务费用","amount":"利息"},
+      {"direction":"Cr","account":"银行存款","amount":"合同金"},
+      {"direction":"Cr","account":"未确认融资费用","amount":"利息"},
+      ]
+    },
+    {"name":"接受无形资产投资","entries":[
+      {"direction":"Dr","account":"无形资产","amount":"合同金"},
+      {"direction":"Cr","account":"实收资本","amount":"按股份计算"},
+      {"direction":"Cr","account":"银行存款","amount":"实际付款"},
+      ]
+    },
+    {"name":"发生研发支出","entries":[
+      {"direction":"Dr","account":"研发支出-费用化支出","amount":""},
+      {"direction":"Dr","account":"研发支出-资本化支出","amount":""},
+      {"direction":"Cr","account":"原材料","amount":""},
+      {"direction":"Cr","account":"应付职工薪酬","amount":""},
+      {"direction":"Cr","account":"银行存款","amount":""},
+      ]
+    },
+    {"name":"研发无形资产达到预定用途","entries":[
+      {"direction":"Dr","account":"管理费用","amount":"研发支出-费用化支出的量"},
+      {"direction":"Dr","account":"无形资产","amount":"研发支出-资本化支出的量"},
+      {"direction":"Cr","account":"研发支出-费用化支出","amount":""},
+      {"direction":"Cr","account":"研发支出-资本化支出","amount":""},
+     
+      ]
+    },
+    {"name":"摊销无形资产","entries":[
+      {"direction":"Dr","account":"制造费用","amount":""},
+      {"direction":"Dr","account":"管理费用","amount":""},
+      {"direction":"Cr","account":"累计摊销","amount":""},     
+      ]
+    },
+    {"name":"无形资产减值","entries":[
+      {"direction":"Dr","account":"资产减值损失","amount":"研发支出-费用化支出的量"},
+      {"direction":"Cr","account":"无形资产减值准备","amount":""},
+     
       ]
     },
    
